@@ -38,8 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 phone: formData.get('phone'),
                 scout: formData.get('scout'),
                 troop: formData.get('troop') || 'غير محدد',
-                quiz: formData.get('quiz'),
-                expectations: getQuizAnswer(formData.get('quiz')),
+                quiz1: formData.get('quiz1'),
+                quiz2: formData.get('quiz2'),
+                quiz3: formData.get('quiz3'),
+                quiz4: formData.get('quiz4'),
+                expectations: getQuizAnswers(formData),
                 registrationDate: new Date().toLocaleDateString('ar-SA'),
                 year: '2026',
                 createdAt: new Date().toISOString()
@@ -64,15 +67,42 @@ function saveParticipant(participant) {
     localStorage.setItem('mahdiWeekParticipants', JSON.stringify(participants));
 }
 
-// Get quiz answer text
-function getQuizAnswer(quizValue) {
+// Get quiz answers text
+function getQuizAnswers(formData) {
     const answers = {
-        'correct': 'أكثر من 1400 سنة ✅ (الإجابة الصحيحة)',
-        'wrong1': 'أقل من 1000 سنة',
-        'wrong2': 'حوالي 1200 سنة',
-        'wrong3': 'أكثر من 2000 سنة'
+        quiz1: {
+            '255': '255 هجرية ✅',
+            '260': '260 هجرية',
+            '250': '250 هجرية',
+            '265': '265 هجرية'
+        },
+        quiz2: {
+            'hasan': 'الحسن العسكري ✅',
+            'ali': 'علي النقي',
+            'muhammad': 'محمد الجواد',
+            'musa': 'موسى الكاظم'
+        },
+        quiz3: {
+            'narcissus': 'نرجس خاتون ✅',
+            'fatima': 'فاطمة المعصومة',
+            'zainab': 'زينب الكبرى',
+            'maryam': 'مريم بنت شقيل'
+        },
+        quiz4: {
+            'mahdi': 'المهدي المنتظر ✅',
+            'qaem': 'القائم آل محمد',
+            'hujja': 'الحجة بن الحسن',
+            'baqiyallah': 'بقية الله'
+        }
     };
-    return answers[quizValue] || 'لم يجب';
+    
+    let result = 'المسابقة:\n';
+    result += `1. ${answers.quiz1[formData.get('quiz1')] || 'لم يجب'}\n`;
+    result += `2. ${answers.quiz2[formData.get('quiz2')] || 'لم يجب'}\n`;
+    result += `3. ${answers.quiz3[formData.get('quiz3')] || 'لم يجب'}\n`;
+    result += `4. ${answers.quiz4[formData.get('quiz4')] || 'لم يجب'}`;
+    
+    return result;
 }
 
 // Show success message
