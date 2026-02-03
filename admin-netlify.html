@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - أسبوع صاحب العصر والزمان</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Admin specific styles */
+        .admin-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            position: relative;
+        }
+
+        .admin-container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop') center/cover;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-form {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(15, 52, 96, 0.95));
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 25px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-form h2 {
+            color: #ffd700;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .login-form input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Tajawal', sans-serif;
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+        }
+
+        .error-message {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            display: none;
+        }
+
+        .admin-content {
+            display: none;
+            padding: 2rem 0;
+        }
+
+        .admin-header {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .admin-header h1 {
+            color: #ffd700;
+            text-align: center;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-actions {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .back-btn, .logout-btn {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .back-btn:hover, .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(15, 52, 96, 0.9));
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        .data-table {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(15, 52, 96, 0.9));
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #ffd700;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .table-cell {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .action-btn.danger:hover {
+            box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        .scout-badge {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .non-scout-badge {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .table-header, .table-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .table-header {
+                display: none;
+            }
+            
+            .table-cell {
+                margin-bottom: 0.5rem;
+            }
+            
+            .table-cell::before {
+                content: attr(data-label) ": ";
+                color: #ffd700;
+                font-weight: 600;
+                display: inline-block;
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Login Page -->
+        <div id="loginPage" class="login-page">
+            <div class="login-form">
+                <h2>🔐 تسجيل الدخول</h2>
+                <form id="loginForm">
+                    <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
+                    <div id="errorMessage" class="error-message">كلمة المرور خاطئة!</div>
+                    <button type="submit" class="login-btn">دخول</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Admin Content -->
+        <div id="adminContent" class="admin-content">
+            <div class="admin-header">
+                <div class="container">
+                    <h1>📊 لوحة التحكم</h1>
+                    <div class="header-actions">
+                        <a href="index-netlify.html" class="back-btn">🏠 الموقع الرئيسي</a>
+                        <button onclick="logout()" class="logout-btn">🚪 تسجيل الخروج</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <!-- Statistics -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCount">0</div>
+                        <div class="stat-label">إجمالي المشاركين</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="scoutCount">0</div>
+                        <div class="stat-label">المرشدون</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="nonScoutCount">0</div>
+                        <div class="stat-label">غير المرشدين</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="todayCount">0</div>
+                        <div class="stat-label">مسجلي اليوم</div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="data-table">
+                    <div class="table-header">
+                        <div>الاسم</div>
+                        <div>الهاتف</div>
+                        <div>النوع</div>
+                        <div>الفوج</div>
+                        <div>التاريخ</div>
+                        <div>المسابقة</div>
+                        <div>التوقعات</div>
+                    </div>
+                    <div id="dataTableBody">
+                        <!-- Data will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button onclick="exportToJSON()" class="action-btn">📄 تصدير JSON</button>
+                    <button onclick="exportToCSV()" class="action-btn">📊 تصدير CSV</button>
+                    <button onclick="printData()" class="action-btn">🖨️ طباعة</button>
+                    <button onclick="clearAllData()" class="action-btn danger">🗑️ حذف الكل</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-netlify.js"></script>
+</body>
+</html>

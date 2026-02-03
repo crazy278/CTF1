@@ -1,8 +1,8 @@
+// API Configuration
+const API_BASE = window.location.origin + '/api';
+
 // Navigation functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Load participants from localStorage
-    loadParticipants();
-    
     // Navigation links
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('.section');
@@ -29,66 +29,65 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Registration form handling
     const registrationForm = document.getElementById('registrationForm');
-    registrationForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = new FormData(this);
-        const participant = {
-            id: Date.now(),
-            name: formData.get('name'),
-            phone: formData.get('phone'),
-            scout: formData.get('scout'),
-            expectations: formData.get('expectations'),
-            registrationDate: new Date().toLocaleDateString('ar-SA')
-        };
-        
-        // Save to localStorage
-        saveParticipant(participant);
-        
-        // Show success message
-        showSuccessMessage();
-        
-        // Reset form
-        this.reset();
-        
-        // Update participants list
-        loadParticipants();
-    });
+    if (registrationForm) {
+        registrationForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const participant = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                scout: formData.get('scout'),
+                troop: formData.get('troop') || 'غير محدد',
+                quiz: formData.get('quiz'),
+                expectations: getQuizAnswer(formData.get('quiz'))
+            };
+            
+            // Save to database via API
+            saveParticipantToDatabase(participant);
+        });
+    }
 });
 
-// Save participant to localStorage
-function saveParticipant(participant) {
-    let participants = JSON.parse(localStorage.getItem('participants') || '[]');
-    participants.push(participant);
-    localStorage.setItem('participants', JSON.stringify(participants));
+// Save participant to database via API
+async function saveParticipantToDatabase(participant) {
+    try {
+        const response = await fetch(`${API_BASE}/participants`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(participant)
+        });
+        
+        if (response.ok) {
+            // Show success message
+            showSuccessMessage();
+            
+            // Reset form
+            document.getElementById('registrationForm').reset();
+        } else {
+            alert('حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.');
+        }
+    } catch (error) {
+        console.error('Error saving participant:', error);
+        alert('حدث خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
+    }
 }
 
-// Load and display participants
-function loadParticipants() {
-    const participants = JSON.parse(localStorage.getItem('participants') || '[]');
-    const participantsList = document.getElementById('participantsList');
-    
-    if (participants.length === 0) {
-        participantsList.innerHTML = '<p class="no-participants">لا يوجد مشاركون حتى الآن</p>';
-        return;
-    }
-    
-    participantsList.innerHTML = participants.map(participant => `
-        <div class="participant-card">
-            <div class="participant-name">${participant.name}</div>
-            <div class="participant-info">
-                <span class="info-item">📞 ${participant.phone}</span>
-                <span class="info-item">${participant.scout === 'yes' ? '🎯 كشفي' : '👤 غير كشفي'}</span>
-                <span class="info-item">📅 ${participant.registrationDate}</span>
-            </div>
-            ${participant.expectations ? `
-                <div class="participant-expectations">
-                    <strong>توقعاته:</strong> ${participant.expectations}
-                </div>
-            ` : ''}
-        </div>
-    `).join('');
+// Load and display participants - REMOVED for security
+// Participants data is now only accessible through admin panel
+
+// Get quiz answer text
+function getQuizAnswer(quizValue) {
+    const answers = {
+        'justice': 'حكومة العدل الإلهي والمساواة ✅',
+        'power': 'حكومة القوة والسيطرة',
+        'wealth': 'حكومة الثراء المادي',
+        'technology': 'حكومة التكنولوجيا المتقدمة'
+    };
+    return answers[quizValue] || 'لم يجب';
 }
 
 // Show success message
@@ -102,8 +101,8 @@ function closeSuccessMessage() {
     const successMessage = document.getElementById('successMessage');
     successMessage.classList.remove('show');
     
-    // Navigate to participants section
-    document.querySelector('.nav-link[href="#participants"]').click();
+    // Navigate to registration form section
+    document.querySelector('.nav-link[href="#register"]').click();
 }
 
 // Phone number formatting
@@ -169,110 +168,11 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Add print functionality for participants list
-function printParticipants() {
-    const participants = JSON.parse(localStorage.getItem('participants') || '[]');
-    if (participants.length === 0) {
-        alert('لا يوجد مشاركون للطباعة');
-        return;
-    }
-    
-    let printContent = `
-        <html dir="rtl">
-        <head>
-            <title>قائمة المشاركين - أسبوع صاحب العصر والزمان</title>
-            <style>
-                body { font-family: 'Tajawal', sans-serif; direction: rtl; padding: 20px; }
-                h1 { text-align: center; color: #333; margin-bottom: 30px; }
-                .participant { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
-                .name { font-weight: bold; font-size: 18px; margin-bottom: 10px; }
-                .info { margin-bottom: 5px; color: #666; }
-                .expectations { margin-top: 10px; font-style: italic; color: #555; }
-                @media print { .no-print { display: none; } }
-            </style>
-        </head>
-        <body>
-            <h1>قائمة المشاركين في أسبوع صاحب العصر والزمان</h1>
-            <p>تاريخ الطباعة: ${new Date().toLocaleDateString('ar-SA')}</p>
-            <hr>
-    `;
-    
-    participants.forEach(participant => {
-        printContent += `
-            <div class="participant">
-                <div class="name">${participant.name}</div>
-                <div class="info">الهاتف: ${participant.phone}</div>
-                <div class="info">النوع: ${participant.scout === 'yes' ? 'كشفي' : 'غير كشفي'}</div>
-                <div class="info">تاريخ التسجيل: ${participant.registrationDate}</div>
-                ${participant.expectations ? `<div class="expectations">التوقعات: ${participant.expectations}</div>` : ''}
-            </div>
-        `;
-    });
-    
-    printContent += '</body></html>';
-    
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.print();
-}
+// Add print functionality for participants - REMOVED for security
+// Participants data is now only accessible through admin panel
 
-// Add export to CSV functionality
-function exportToCSV() {
-    const participants = JSON.parse(localStorage.getItem('participants') || '[]');
-    if (participants.length === 0) {
-        alert('لا يوجد مشاركون للتصدير');
-        return;
-    }
-    
-    let csvContent = '\ufeff'; // BOM for UTF-8
-    csvContent += 'الاسم,رقم الهاتف,نوع المشارك,توقعات,تاريخ التسجيل\n';
-    
-    participants.forEach(participant => {
-        csvContent += `"${participant.name}","${participant.phone}","${participant.scout === 'yes' ? 'كشفي' : 'غير كشفي'}","${participant.expectations || ''}","${participant.registrationDate}"\n`;
-    });
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `المشاركون_أسبوع_صاحب_العصر_${new Date().toLocaleDateString('ar-SA')}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+// Add export to CSV functionality - REMOVED for security
+// Participants data is now only accessible through admin panel
 
-// Add search functionality for participants
-function searchParticipants() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const participants = JSON.parse(localStorage.getItem('participants') || '[]');
-    const participantsList = document.getElementById('participantsList');
-    
-    const filteredParticipants = participants.filter(participant => 
-        participant.name.toLowerCase().includes(searchTerm) ||
-        participant.phone.includes(searchTerm) ||
-        (participant.expectations && participant.expectations.toLowerCase().includes(searchTerm))
-    );
-    
-    if (filteredParticipants.length === 0) {
-        participantsList.innerHTML = '<p class="no-participants">لا توجد نتائج للبحث</p>';
-        return;
-    }
-    
-    participantsList.innerHTML = filteredParticipants.map(participant => `
-        <div class="participant-card">
-            <div class="participant-name">${participant.name}</div>
-            <div class="participant-info">
-                <span class="info-item">📞 ${participant.phone}</span>
-                <span class="info-item">${participant.scout === 'yes' ? '🎯 كشفي' : '👤 غير كشفي'}</span>
-                <span class="info-item">📅 ${participant.registrationDate}</span>
-            </div>
-            ${participant.expectations ? `
-                <div class="participant-expectations">
-                    <strong>توقعاته:</strong> ${participant.expectations}
-                </div>
-            ` : ''}
-        </div>
-    `).join('');
-}
+// Add search functionality for participants - REMOVED for security
+// Participants data is now only accessible through admin panel

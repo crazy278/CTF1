@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار التسجيل</title>
+    <script src="script.js"></script>
+</head>
+<body>
+    <h1>اختبار التسجيل</h1>
+    <form id="registrationForm">
+        <input type="text" name="name" placeholder="الاسم" required><br><br>
+        <input type="tel" name="phone" placeholder="الهاتف" required><br><br>
+        <input type="radio" name="scout" value="yes" required> نعم
+        <input type="radio" name="scout" value="no" required> لا<br><br>
+        <select name="troop">
+            <option value="">اختر الفوج</option>
+            <option value="وادي جيلو">فوج وادي جيلو</option>
+        </select><br><br>
+        <textarea name="expectations" placeholder="التوقعات"></textarea><br><br>
+        <button type="submit">سجل</button>
+    </form>
+    
+    <div id="successMessage" style="display:none; background:green; color:white; padding:20px;">
+        <h3>تم التسجيل بنجاح!</h3>
+        <button onclick="closeSuccessMessage()">حسناً</button>
+    </div>
+</body>
+</html>
