@@ -67,10 +67,10 @@ function saveParticipant(participant) {
 // Get quiz answer text
 function getQuizAnswer(quizValue) {
     const answers = {
-        'justice': 'حكومة العدل الإلهي والمساواة ✅',
-        'power': 'حكومة القوة والسيطرة',
-        'wealth': 'حكومة الثراء المادي',
-        'technology': 'حكومة التكنولوجيا المتقدمة'
+        'correct': 'أكثر من 1400 سنة ✅ (الإجابة الصحيحة)',
+        'wrong1': 'أقل من 1000 سنة',
+        'wrong2': 'حوالي 1200 سنة',
+        'wrong3': 'أكثر من 2000 سنة'
     };
     return answers[quizValue] || 'لم يجب';
 }

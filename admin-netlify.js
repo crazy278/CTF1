@@ -75,8 +75,8 @@ function loadParticipants() {
             </div>
             <div class="table-cell" data-label="الفوج">${participant.troop || 'غير محدد'}</div>
             <div class="table-cell" data-label="التاريخ">${participant.registrationDate}</div>
-            <div class="table-cell" data-label="المسابقة">${participant.quiz || 'لم يجب'}</div>
-            <div class="table-cell" data-label="التوقعات">${participant.expectations || 'لا يوجد'}</div>
+            <div class="table-cell" data-label="المسابقة">عمر الإمام المهدي</div>
+            <div class="table-cell" data-label="الإجابة">${participant.expectations || 'لا يوجد'}</div>
         </div>
     `).join('');
 }
