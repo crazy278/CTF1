@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 quiz1: formData.get('quiz1'),
                 quiz2: formData.get('quiz2'),
                 quiz3: formData.get('quiz3'),
-                quiz4: formData.get('quiz4'),
                 expectations: getQuizAnswers(formData),
                 registrationDate: new Date().toLocaleDateString('ar-SA'),
                 year: '2026',
@@ -87,20 +86,13 @@ function getQuizAnswers(formData) {
             'fatima': 'فاطمة المعصومة',
             'zainab': 'زينب الكبرى',
             'maryam': 'مريم بنت شقيل'
-        },
-        quiz4: {
-            'mahdi': 'المهدي المنتظر ✅',
-            'qaem': 'القائم آل محمد',
-            'hujja': 'الحجة بن الحسن',
-            'baqiyallah': 'بقية الله'
         }
     };
     
     let result = 'المسابقة:\n';
     result += `1. ${answers.quiz1[formData.get('quiz1')] || 'لم يجب'}\n`;
     result += `2. ${answers.quiz2[formData.get('quiz2')] || 'لم يجب'}\n`;
-    result += `3. ${answers.quiz3[formData.get('quiz3')] || 'لم يجب'}\n`;
-    result += `4. ${answers.quiz4[formData.get('quiz4')] || 'لم يجب'}`;
+    result += `3. ${answers.quiz3[formData.get('quiz3')] || 'لم يجب'}`;
     
     return result;
 }
